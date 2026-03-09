@@ -1,0 +1,59 @@
+@import "tailwindcss";
+
+:root {
+  --color-background: #F8F5F0;
+  --color-primary: #1A1A1A;
+  --color-accent: #C9A84C;
+  --color-secondary-text: #6B6B6B;
+}
+
+@theme {
+  --color-akeela-cream: #F8F5F0;
+  --color-akeela-black: #1A1A1A;
+  --color-akeela-gold: #C9A84C;
+  --color-akeela-gray: #6B6B6B;
+
+  --font-display: "Playfair Display", serif;
+  --font-body: "Outfit", sans-serif;
+}
+
+body {
+  @apply bg-akeela-cream text-akeela-black antialiased;
+  font-family: var(--font-body);
+}
+
+h1,
+h2,
+h3,
+h4,
+.brand-font {
+  font-family: var(--font-display);
+}
+
+.glass-morphism {
+  @apply bg-white/70 backdrop-blur-md border border-white/20;
+}
+
+.premium-card {
+  @apply bg-white rounded-2xl shadow-sm hover:shadow-xl transition-all duration-500 border border-gray-100;
+}
+
+.btn-primary {
+  @apply bg-akeela-black text-white px-8 py-4 rounded-full font-medium transition-all active:scale-95 hover:bg-akeela-black/90 hover:shadow-lg hover:shadow-akeela-black/20;
+}
+
+.btn-accent {
+  @apply bg-akeela-gold text-white px-8 py-4 rounded-full font-medium transition-all active:scale-95 hover:opacity-90;
+}
+
+.btn-secondary {
+  @apply bg-white text-akeela-black border border-gray-200 px-8 py-4 rounded-full font-medium transition-all active:scale-95 hover:bg-gray-50;
+}
+
+.text-gold {
+  @apply text-akeela-gold;
+}
+
+.bg-gold {
+  @apply bg-akeela-gold;
+}
