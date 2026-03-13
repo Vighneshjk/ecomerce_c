@@ -1,0 +1,99 @@
+@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;600&family=Instrument+Sans:wght@400;500;600&family=DM+Mono:wght@400;500&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --brand-50: #fdfaf5;
+  --brand-100: #f5f0e8;
+  --brand-200: #e8dcc8;
+  --brand-300: #d4c4a0;
+  --brand-400: #c9a96e;
+  --brand-500: #b8924f;
+  --brand-600: #9a7840;
+  --brand-700: #7a5f32;
+  --brand-800: #5c4726;
+  --brand-900: #3d2f1a;
+
+  --charcoal-50: #f5f5f5;
+  --charcoal-100: #e8e8e8;
+  --charcoal-200: #d1d1d1;
+  --charcoal-300: #aaaaaa;
+  --charcoal-400: #888888;
+  --charcoal-500: #555555;
+  --charcoal-600: #333333;
+  --charcoal-700: #222222;
+  --charcoal-800: #141414;
+  --charcoal-900: #0a0a0a;
+
+  --accent-rose: #c98a8a;
+  --accent-sage: #8aac96;
+  --accent-sky: #8aacc9;
+
+  --font-display: 'Cormorant Garamond', serif;
+  --font-sans: 'Instrument Sans', sans-serif;
+  --font-mono: 'DM Mono', monospace;
+}
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  body {
+    font-family: var(--font-sans), system-ui, sans-serif;
+  }
+
+  body::selection {
+    background-color: var(--brand-200);
+    color: var(--brand-900);
+  }
+
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    font-family: var(--font-display), serif;
+  }
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--charcoal-50);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--brand-400);
+  border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--brand-600);
+}
+
+@layer components {
+  .container-app {
+    @apply max-w-7xl mx-auto px-4 sm:px-6 lg:px-8;
+  }
+
+  .btn-primary {
+    @apply px-6 py-3 bg-brand-600 text-white font-medium rounded-lg hover:bg-brand-700 transition-all duration-200 focus:ring-4 focus:ring-brand-200;
+  }
+
+  .btn-secondary {
+    @apply px-6 py-3 bg-white border border-charcoal-200 text-charcoal-800 font-medium rounded-lg hover:bg-charcoal-50 transition-all duration-200 focus:ring-4 focus:ring-charcoal-100;
+  }
+
+  .btn-ghost {
+    @apply px-6 py-3 text-charcoal-600 font-medium rounded-lg hover:bg-charcoal-50 transition-all duration-200;
+  }
+}

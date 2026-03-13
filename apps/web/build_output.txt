@@ -1,0 +1,110 @@
+
+> akela@0.1.0 build
+> next build
+
+▲ Next.js 16.1.6 (Turbopack)
+
+⚠ The "middleware" file convention is deprecated. Please use "proxy" instead. Learn more: https://nextjs.org/docs/messages/middleware-to-proxy
+  Creating an optimized production build ...
+Error: Cannot apply unknown utility class `font-sans`. Are you using CSS modules or similar and missing `@reference`? https://tailwindcss.com/docs/functions-and-directives#reference-directive
+    [2m[at onInvalidCandidate (D:\company project\ecomerce 2\node_modules\tailwindcss\dist\lib.js:21:1314)][0m
+    [2m[at Ee (D:\company project\ecomerce 2\node_modules\tailwindcss\dist\lib.js:16:37066)][0m
+    [2m[at D:\company project\ecomerce 2\node_modules\tailwindcss\dist\lib.js:21:355][0m
+    [2m[at Pr (D:\company project\ecomerce 2\node_modules\tailwindcss\dist\lib.js:3:1733)][0m
+    [2m[at _ (D:\company project\ecomerce 2\node_modules\tailwindcss\dist\lib.js:3:1377)][0m
+    [2m[at Te (D:\company project\ecomerce 2\node_modules\tailwindcss\dist\lib.js:21:172)][0m
+    [2m[at pn (D:\company project\ecomerce 2\node_modules\tailwindcss\dist\lib.js:38:294)][0m
+    [2m[at process.processTicksAndRejections (node:internal/process/task_queues:105:5)][0m
+    [2m[at async dn (D:\company project\ecomerce 2\node_modules\tailwindcss\dist\lib.js:38:631)][0m
+    [2m[at async Xr (D:\company project\ecomerce 2\node_modules\@tailwindcss\node\dist\index.js:10:3417)][0m
+
+> Build error occurred
+Error: Turbopack build failed with 6 errors:
+./apps/web/src/app/(checkout)
+You cannot have two parallel pages that resolve to the same path. Please check /(account) and /(checkout).
+
+./apps/web/src/app/(marketing)
+You cannot have two parallel pages that resolve to the same path. Please check /(checkout) and /(marketing).
+
+./apps/web/src/app/(tryon)
+You cannot have two parallel pages that resolve to the same path. Please check /(marketing) and /(tryon).
+
+./apps/web/src/app/globals.css
+Error evaluating Node.js code
+CssSyntaxError: tailwindcss: D:\company project\ecomerce 2\apps\web\src\app\globals.css:1:1: Cannot apply unknown utility class `font-sans`. Are you using CSS modules or similar and missing `@reference`? https://tailwindcss.com/docs/functions-and-directives#reference-directive
+    at Input.error (node_modules/postcss/lib/input.js:135:16) [D:\company project\ecomerce 2\apps\web\.next\build\chunks\node_modules_2d7da256._.js:4651:22]
+    at Root.error (node_modules/postcss/lib/node.js:146:32) [D:\company project\ecomerce 2\apps\web\.next\build\chunks\node_modules_2d7da256._.js:928:38]
+    [at Object.Once (D:\company project\ecomerce 2\node_modules\@tailwindcss\postcss\dist\index.js:10:6913)]
+    [at process.processTicksAndRejections (node:internal/process/task_queues:105:5)]
+    at async LazyResult.runAsync (node_modules/postcss/lib/lazy-result.js:293:11) [D:\company project\ecomerce 2\apps\web\.next\build\chunks\node_modules_2d7da256._.js:6214:21]
+    at async transform (turbopack:///[turbopack-node]/transforms/postcss.ts:70:34) [D:\company project\ecomerce 2\apps\web\.next\build\chunks\[root-of-the-server]__4a07fad2._.js:146:36]
+    at async run (turbopack:///[turbopack-node]/ipc/evaluate.ts:92:23) [D:\company project\ecomerce 2\apps\web\.next\build\chunks\[root-of-the-server]__623ed9a7._.js:443:31]
+
+Import trace:
+  Client Component Browser:
+    ./apps/web/src/app/globals.css [Client Component Browser]
+    ./apps/web/src/app/layout.tsx [Server Component]
+
+
+./node_modules/@prisma/client/default.js:2:6
+Module not found: Can't resolve '.prisma/client/default'
+[0m [90m 1 |[39m module[33m.[39mexports [33m=[39m {
+[31m[1m>[22m[39m[90m 2 |[39m   [33m...[39mrequire([32m'.prisma/client/default'[39m)[33m,[39m
+ [90m   |[39m      [31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m
+ [90m 3 |[39m }
+ [90m 4 |[39m[0m
+
+
+
+Import traces:
+  Edge Middleware:
+    ./node_modules/@prisma/client/default.js
+    ./apps/web/src/lib/db.ts
+    ./apps/web/src/lib/auth.ts
+    ./apps/web/src/middleware.ts
+
+  externals-tracing:
+    ./node_modules/@prisma/client/default.js [externals-tracing]
+    [externals]/@prisma/client [external]
+    ./apps/web/src/lib/db.ts [App Route]
+    ./apps/web/src/app/api/auth/forgot-password/route.ts [App Route]
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+./apps/web/src/lib/auth.ts:2:1
+Module not found: Can't resolve '@auth/prisma-adapter'
+[0m [90m 1 |[39m [36mimport[39m [33mNextAuth[39m [36mfrom[39m [32m"next-auth"[39m
+[31m[1m>[22m[39m[90m 2 |[39m [36mimport[39m { [33mPrismaAdapter[39m } [36mfrom[39m [32m"@auth/prisma-adapter"[39m
+ [90m   |[39m [31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m
+ [90m 3 |[39m [36mimport[39m [33mGoogle[39m [36mfrom[39m [32m"next-auth/providers/google"[39m
+ [90m 4 |[39m [36mimport[39m [33mCredentials[39m [36mfrom[39m [32m"next-auth/providers/credentials"[39m
+ [90m 5 |[39m [36mimport[39m { db } [36mfrom[39m [32m"@/lib/db"[39m[0m
+
+
+
+Import traces:
+  App Route:
+    ./apps/web/src/lib/auth.ts
+    ./apps/web/src/app/api/auth/[...nextauth]/route.ts
+
+  Edge Middleware:
+    ./apps/web/src/lib/auth.ts
+    ./apps/web/src/middleware.ts
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+    at async transform (turbopack:///[turbopack-node]/transforms/postcss.ts:70:34) [D:\company project\ecomerce 2\apps\web\.next\build\chunks\[root-of-the-server]__4a07fad2._.js:146:36])
+    at async run (turbopack:///[turbopack-node]/ipc/evaluate.ts:92:23) [D:\company project\ecomerce 2\apps\web\.next\build\chunks\[root-of-the-server]__623ed9a7._.js:443:31])
+    at ./node_modules/ (prisma/client/default.js:2:6)
+    at <unknown> (https://nextjs.org/docs/messages/module-not-found)
+    at <unknown> (./apps/web/src/lib/auth.ts:2:1)
+    at <unknown> (https://nextjs.org/docs/messages/module-not-found)
+npm error Lifecycle script `build` failed with error:
+npm error code 1
+npm error path D:\company project\ecomerce 2\apps\web
+npm error workspace akela@0.1.0
+npm error location D:\company project\ecomerce 2\apps\web
+npm error command failed
+npm error command C:\Windows\system32\cmd.exe /d /s /c next build

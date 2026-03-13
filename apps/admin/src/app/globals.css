@@ -1,0 +1,23 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+    --brand-500: #FFD700;
+    --charcoal-900: #0d0d0d;
+}
+
+body {
+    background-color: #0A0A0A;
+    color: white;
+    font-family: 'Inter', sans-serif;
+}
+
+.no-scrollbar::-webkit-scrollbar {
+    display: none;
+}
+
+.no-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+}

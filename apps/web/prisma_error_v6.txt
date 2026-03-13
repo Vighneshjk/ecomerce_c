@@ -1,0 +1,6 @@
+Error: There is a conflict between env var in .env and ..\..\packages\db\.env
+Conflicting env vars:
+  DATABASE_URL
+
+We suggest to move the contents of ..\..\packages\db\.env to .env to consolidate your env vars.
+
