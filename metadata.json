@@ -1,0 +1,5 @@
+{
+  "name": "Akeela Vision",
+  "description": "Premium AI-powered eyewear eCommerce with 3D virtual try-on and face shape analysis.",
+  "requestFramePermissions": ["camera", "microphone"]
+}
