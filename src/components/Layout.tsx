@@ -61,9 +61,23 @@ export const Navbar: React.FC<{ cartCount: number; onCartClick: () => void }> = 
         </button>
         
         {user?.role === 'admin' && (
-          <Link to="/admin" className="hover:text-white/70 transition-colors">
-            <Shield size={20} />
-          </Link>
+          <div className="relative group">
+            <Link 
+              to="/admin" 
+              className="text-[10px] uppercase tracking-[0.2em] font-bold bg-white/5 px-4 py-2 hover:bg-white hover:text-obsidian transition-all flex items-center gap-2"
+            >
+              <Shield size={12} />
+              Go to Admin Panel
+            </Link>
+            <div className="absolute top-full right-0 mt-2 w-56 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 translate-y-2 group-hover:translate-y-0 z-50">
+              <div className="bg-obsidian border border-white/10 p-2 shadow-2xl flex flex-col gap-1 backdrop-blur-xl">
+                <button onClick={() => navigate('/admin', { state: { tab: 'overview' } })} className="text-[10px] uppercase tracking-widest p-3 text-left hover:bg-white/5 transition-colors">Overview Dashboard</button>
+                <button onClick={() => navigate('/admin', { state: { tab: 'products', action: 'add' } })} className="text-[10px] uppercase tracking-widest p-3 text-left hover:bg-white/5 transition-colors">Product Add / Inventory</button>
+                <button onClick={() => navigate('/admin', { state: { tab: 'transactions' } })} className="text-[10px] uppercase tracking-widest p-3 text-left hover:bg-white/5 transition-colors">View Transaction History</button>
+                <button onClick={() => navigate('/admin', { state: { tab: 'users' } })} className="text-[10px] uppercase tracking-widest p-3 text-left hover:bg-white/5 transition-colors">User Information List</button>
+              </div>
+            </div>
+          </div>
         )}
 
         <Link to={user ? "/dashboard" : "/login"} className="hover:text-white/70 transition-colors">

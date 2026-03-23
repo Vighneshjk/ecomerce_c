@@ -371,4 +371,32 @@ class AdminTransactionListView(APIView):
         return Response(data)
 
 
+class AdminTransactionDetailView(APIView):
+    """Update order status. Admin only."""
+    permission_classes = [IsAdminUser]
+
+    def patch(self, request, pk):
+        from apps.orders.models import Order
+        order = get_object_or_404(Order, pk=pk)
+        new_status = request.data.get('status')
+        if not new_status:
+            return Response({'error': 'Status is required.'}, status=400)
+        
+        # Validate status choice
+        if new_status not in dict(Order.STATUS_CHOICES):
+            return Response({'error': f'Invalid status. Choose from: {", ".join(dict(Order.STATUS_CHOICES).keys())}'}, status=400)
+
+        order.status = new_status
+        # Special case: mark as paid if delivered? Or set timestamps
+        from django.utils import timezone
+        if new_status == 'delivered':
+            order.delivered_at = timezone.now()
+        elif new_status == 'shipped':
+            order.shipped_at = timezone.now()
+            
+        order.save(update_fields=['status', 'delivered_at', 'shipped_at', 'updated_at'])
+        return Response({'detail': f'Order {order.order_number} status updated to {new_status}.'})
+
+
+
 

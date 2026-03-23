@@ -4,7 +4,8 @@ from .views import (
     HealthCheckView, RegisterView, LoginView, LogoutView,
     TokenRefreshView, MeView, ChangePasswordView,
     ForgotPasswordView, ResetPasswordView, AddressViewSet,
-    AdminUserListView, AdminUserDetailView, AdminTransactionListView,
+    AdminUserListView, AdminUserDetailView,
+    AdminTransactionListView, AdminTransactionDetailView,
 )
 
 router = DefaultRouter()
@@ -24,5 +25,6 @@ urlpatterns = [
     path('admin/users/',               AdminUserListView.as_view()),
     path('admin/users/<int:pk>/',      AdminUserDetailView.as_view()),
     path('admin/transactions/',        AdminTransactionListView.as_view()),
+    path('admin/transactions/<int:pk>/', AdminTransactionDetailView.as_view()),
     path('', include(router.urls)),
 ]

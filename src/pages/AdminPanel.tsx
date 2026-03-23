@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
+import { useLocation } from 'react-router-dom';
 import { Navbar, Footer } from '../components/Layout';
 import { apiFetch } from '../services/api';
 import {
@@ -74,7 +75,18 @@ interface ProductRow {
 
 
 export const AdminPanel: React.FC = () => {
-  const [activeTab, setActiveTab] = useState<ActiveTab>('overview');
+  const location = useLocation();
+  const [activeTab, setActiveTab] = useState<ActiveTab>((location.state as any)?.tab || 'overview');
+  
+  // Listen for navigation state changes
+  useEffect(() => {
+    if ((location.state as any)?.tab) {
+      setActiveTab((location.state as any).tab);
+    }
+    if ((location.state as any)?.action === 'add') {
+      openProductModal(null);
+    }
+  }, [location.state]);
   const [users, setUsers] = useState<UserRow[]>([]);
   const [transactions, setTransactions] = useState<TransactionRow[]>([]);
   const [products, setProducts] = useState<ProductRow[]>([]);
@@ -129,6 +141,25 @@ export const AdminPanel: React.FC = () => {
       setLoading(false);
     }
   }, []);
+
+  const handleUpdateOrderStatus = async (orderId: number, newStatus: string) => {
+    try {
+      const res = await apiFetch(`/api/auth/admin/transactions/${orderId}/`, {
+        method: 'PATCH',
+        body: JSON.stringify({ status: newStatus.toLowerCase() })
+      });
+      if (res.ok) {
+        showToast('✅ Order status updated');
+        fetchTransactions();
+        setSelectedTransaction(prev => prev ? { ...prev, status: newStatus.toLowerCase() } : null);
+      } else {
+        const err = await res.json().catch(() => ({}));
+        showToast(`❌ Update Error: ${err.error || res.statusText}`);
+      }
+    } catch (err) {
+      showToast('❌ Network error while updating status');
+    }
+  };
 
   const fetchProducts = useCallback(async () => {
     setLoading(true);
@@ -625,6 +656,7 @@ export const AdminPanel: React.FC = () => {
                         <th className="pb-4 font-bold">Amount</th>
                         <th className="pb-4 font-bold">Method</th>
                         <th className="pb-4 font-bold">Payment</th>
+                        <th className="pb-4 font-bold">Delivery</th>
                         <th className="pb-4 font-bold">Date</th>
                         <th className="pb-4 font-bold text-right">Actions</th>
                       </tr>
@@ -651,6 +683,17 @@ export const AdminPanel: React.FC = () => {
                               'bg-amber-500/10 text-amber-400'
                             }`}>
                               {t.payment_status}
+                            </span>
+                          </td>
+                          <td className="py-4">
+                            <span className={`text-[10px] uppercase tracking-widest px-2 py-0.5 rounded-full ${
+                              t.status === 'delivered'  ? 'bg-emerald-500/10 text-emerald-400' :
+                              t.status === 'cancelled'  ? 'bg-rose-500/10 text-rose-400' :
+                              t.status === 'shipped'    ? 'bg-blue-500/10 text-blue-400' :
+                              t.status === 'processing' ? 'bg-amber-500/10 text-amber-400' :
+                              'bg-white/5 text-white/40'
+                            }`}>
+                              {t.status}
                             </span>
                           </td>
                           <td className="py-4 text-white/40 text-[10px] uppercase tracking-widest leading-tight">
@@ -936,7 +979,27 @@ export const AdminPanel: React.FC = () => {
               </div>
 
               <div className="mt-12 pt-8 border-t border-white/10 flex justify-between items-center">
-                 <span className="text-xs uppercase tracking-[0.2em] text-white/40">Total Confirmed</span>
+                 <div className="flex flex-col gap-2">
+                    <p className="text-[10px] uppercase tracking-widest text-white/40">Change Status</p>
+                    <div className="flex items-center gap-3">
+                       <select 
+                         value={selectedTransaction.status}
+                         onChange={(e) => handleUpdateOrderStatus(selectedTransaction.id, e.target.value)}
+                         className="bg-white/5 border border-white/10 text-[10px] uppercase tracking-widest px-4 py-2 outline-none focus:border-white/40"
+                       >
+                         {['pending', 'confirmed', 'processing', 'shipped', 'delivered', 'cancelled', 'refunded'].map(s => (
+                           <option key={s} value={s} className="bg-obsidian text-white">{s.toUpperCase()}</option>
+                         ))}
+                       </select>
+                       <span className={`text-[10px] uppercase tracking-[0.2em] font-bold px-3 py-1 rounded-full ${
+                          selectedTransaction.status === 'delivered'  ? 'bg-emerald-500/10 text-emerald-400' :
+                          selectedTransaction.status === 'cancelled'  ? 'bg-rose-500/10 text-rose-400' :
+                          'bg-amber-500/10 text-amber-400'
+                       }`}>
+                          {selectedTransaction.status}
+                       </span>
+                    </div>
+                 </div>
                  <span className="text-3xl font-display">₹{parseFloat(selectedTransaction.total).toLocaleString('en-IN')}</span>
               </div>
             </motion.div>
