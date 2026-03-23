@@ -4,7 +4,7 @@
  */
 
 import React, { useState, useEffect } from 'react';
-import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, Navigate, useNavigate } from 'react-router-dom';
 import Lenis from 'lenis';
 import { motion, AnimatePresence } from 'motion/react';
 import { Navbar, Hero, ProductCard, Footer } from './components/Layout';
@@ -25,12 +25,20 @@ import { Atelier } from './pages/Atelier';
 import { Eyewear3D, EyewearStyle } from './components/Eyewear3D';
 import { OrbitControls, PerspectiveCamera } from '@react-three/drei';
 import { Canvas } from '@react-three/fiber';
+import { PaymentResult } from './pages/PaymentResult';
+import { CareGuide } from './pages/CareGuide';
+import { Shipping } from './pages/Shipping';
+import { Privacy } from './pages/Privacy';
+import { Contact } from './pages/Contact';
+import { StoreLocator } from './pages/StoreLocator';
 
 function MainApp() {
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
   const { cart, isCartOpen, setIsCartOpen, addToCart, updateQuantity, removeFromCart } = useCart();
-
+  const navigate = useNavigate();
+  const { user } = useAuth();
+  
   // 3D Customization State
   const [customStyle, setCustomStyle] = useState<EyewearStyle>('Square');
   const [customColor, setCustomColor] = useState('#111111');
@@ -56,23 +64,33 @@ function MainApp() {
       });
   }, []);
 
-  const { user } = useAuth();
-  
   // Try-on is now in Dashboard
   const handleLaunchAI = () => {
-    window.location.href = '/dashboard';
+    if (!user) {
+      navigate('/login');
+    } else {
+      navigate('/dashboard');
+    }
   };
 
   const handleBespoke = () => {
     if (!user) {
-      window.location.href = '/login';
+      navigate('/login');
     } else {
-      // Logic for bespoke
+      navigate('/bespoke');
     }
   };
 
   // Face filtering is now handled in Dashboard. Home shows everything.
   const filteredProducts = products;
+
+  const handleFilter = (filter: string) => {
+    if (!user) {
+      navigate('/login');
+    } else {
+      console.log('Filter:', filter);
+    }
+  };
 
   return (
     <div className="min-h-screen bg-obsidian text-white">
@@ -93,9 +111,9 @@ function MainApp() {
               </h3>
             </div>
             <div className="flex gap-4 text-xs uppercase tracking-widest font-bold">
-              <button className="px-6 py-2 border-b border-white">All</button>
-              <button className="px-6 py-2 border-b border-transparent text-white/40 hover:text-white transition-colors">Sunglasses</button>
-              <button className="px-6 py-2 border-b border-transparent text-white/40 hover:text-white transition-colors">Optical</button>
+              <button onClick={() => handleFilter('all')} className="px-6 py-2 border-b border-white">All</button>
+              <button onClick={() => handleFilter('sunglasses')} className="px-6 py-2 border-b border-transparent text-white/40 hover:text-white transition-colors">Sunglasses</button>
+              <button onClick={() => handleFilter('optical')} className="px-6 py-2 border-b border-transparent text-white/40 hover:text-white transition-colors">Optical</button>
             </div>
           </div>
 
@@ -176,7 +194,7 @@ function MainApp() {
                       {(['Square', 'Round', 'Aviator'] as EyewearStyle[]).map((style) => (
                         <button
                           key={style}
-                          onClick={() => setCustomStyle(style)}
+                          onClick={() => !user ? navigate('/login') : setCustomStyle(style)}
                           className={`px-8 py-4 border transition-all duration-500 text-[10px] uppercase tracking-widest ${
                             customStyle === style ? 'bg-white text-obsidian border-white' : 'border-white/10 text-white/40 hover:border-white/40'
                           }`}
@@ -198,7 +216,7 @@ function MainApp() {
                       ].map((finish) => (
                         <button
                           key={finish.name}
-                          onClick={() => setCustomColor(finish.color)}
+                          onClick={() => !user ? navigate('/login') : setCustomColor(finish.color)}
                           className="group flex flex-col items-center gap-3"
                         >
                           <div 
@@ -292,10 +310,38 @@ export default function App() {
             path="/" 
             element={<MainApp />} 
           />
-          <Route path="/collections" element={<Collections />} />
-          <Route path="/bespoke" element={<Bespoke />} />
-          <Route path="/vision-ai" element={<VisionAI />} />
-          <Route path="/atelier" element={<Atelier />} />
+          <Route 
+            path="/collections" 
+            element={
+              <ProtectedRoute>
+                <Collections />
+              </ProtectedRoute>
+            } 
+          />
+          <Route 
+            path="/bespoke" 
+            element={
+              <ProtectedRoute>
+                <Bespoke />
+              </ProtectedRoute>
+            } 
+          />
+          <Route 
+            path="/vision-ai" 
+            element={
+              <ProtectedRoute>
+                <VisionAI />
+              </ProtectedRoute>
+            } 
+          />
+          <Route 
+            path="/atelier" 
+            element={
+              <ProtectedRoute>
+                <Atelier />
+              </ProtectedRoute>
+            } 
+          />
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
           <Route 
@@ -311,6 +357,47 @@ export default function App() {
             element={
               <ProtectedRoute adminOnly>
                 <AdminPanel />
+              </ProtectedRoute>
+            } 
+          />
+          <Route path="/payment-result" element={<PaymentResult />} />
+          <Route 
+            path="/care-guide" 
+            element={
+              <ProtectedRoute>
+                <CareGuide />
+              </ProtectedRoute>
+            } 
+          />
+          <Route 
+            path="/shipping" 
+            element={
+              <ProtectedRoute>
+                <Shipping />
+              </ProtectedRoute>
+            } 
+          />
+          <Route 
+            path="/privacy" 
+            element={
+              <ProtectedRoute>
+                <Privacy />
+              </ProtectedRoute>
+            } 
+          />
+          <Route 
+            path="/contact" 
+            element={
+              <ProtectedRoute>
+                <Contact />
+              </ProtectedRoute>
+            } 
+          />
+          <Route 
+            path="/store-locator" 
+            element={
+              <ProtectedRoute>
+                <StoreLocator />
               </ProtectedRoute>
             } 
           />

@@ -2,7 +2,7 @@ import logging
 from rest_framework.views       import APIView
 from rest_framework.generics    import CreateAPIView, RetrieveUpdateAPIView
 from rest_framework.viewsets    import ModelViewSet
-from rest_framework.permissions import AllowAny, IsAuthenticated
+from rest_framework.permissions import AllowAny, IsAuthenticated, IsAdminUser
 from rest_framework.response    import Response
 from rest_framework.decorators  import action
 from rest_framework             import status
@@ -10,6 +10,8 @@ from rest_framework.exceptions  import AuthenticationFailed
 from rest_framework_simplejwt.tokens     import RefreshToken
 from rest_framework_simplejwt.exceptions import TokenError
 from django.contrib.auth import authenticate
+from django.shortcuts           import get_object_or_404
+from django.db                  import models
 from django.utils        import timezone
 from datetime            import timedelta
 from django.conf         import settings
@@ -252,3 +254,120 @@ class AddressViewSet(ModelViewSet):
         address.is_default = True
         address.save()
         return Response(AddressSerializer(address).data)
+
+
+# ─── Admin-only Views ────────────────────────────────────────────────────────
+
+class AdminUserListView(APIView):
+    """List all users, or approve/delete a specific user. Admin only."""
+    permission_classes = [IsAdminUser]
+
+    def get(self, request):
+        users = CustomUser.objects.all().order_by('-date_joined')
+        data = []
+        for u in users:
+            data.append({
+                'id':          u.id,
+                'email':       u.email,
+                'name':        u.name,
+                'phone':       u.phone,
+                'role':        u.role,
+                'is_active':   u.is_active,
+                'date_joined': u.date_joined,
+            })
+        return Response(data)
+
+
+class AdminUserDetailView(APIView):
+    """View details, approve (activate), or delete a user. Admin only."""
+    permission_classes = [IsAdminUser]
+
+    def get(self, request, pk):
+        from apps.orders.models import Order
+        user = get_object_or_404(CustomUser, pk=pk)
+        orders = Order.objects.filter(user=user)
+        total_spent = orders.filter(payment_status='paid').aggregate(s=models.Sum('total'))['s'] or 0
+        
+        return Response({
+            'id':          user.id,
+            'email':       user.email,
+            'name':        user.name,
+            'phone':       user.phone,
+            'role':        user.role,
+            'is_active':   user.is_active,
+            'date_joined': user.date_joined,
+            'analytics': {
+                'total_orders': orders.count(),
+                'total_spent':  str(total_spent),
+                'last_order':   orders.first().created_at if orders.exists() else None
+            }
+        })
+
+    def patch(self, request, pk):
+        try:
+            user = CustomUser.objects.get(pk=pk)
+        except CustomUser.DoesNotExist:
+            return Response({'error': 'User not found.'}, status=status.HTTP_404_NOT_FOUND)
+        action_type = request.data.get('action')
+        if action_type == 'approve':
+            user.is_active = True
+            user.save(update_fields=['is_active'])
+            return Response({'detail': f'User {user.email} approved/activated.'})
+        elif action_type == 'disable':
+            user.is_active = False
+            user.save(update_fields=['is_active'])
+            return Response({'detail': f'User {user.email} disabled.'})
+        return Response({'error': 'Invalid action. Use "approve" or "disable".'}, status=status.HTTP_400_BAD_REQUEST)
+
+    def delete(self, request, pk):
+        try:
+            user = CustomUser.objects.get(pk=pk)
+        except CustomUser.DoesNotExist:
+            return Response({'error': 'User not found.'}, status=status.HTTP_404_NOT_FOUND)
+        if user.role == 'admin':
+            return Response({'error': 'Cannot delete an admin user.'}, status=status.HTTP_403_FORBIDDEN)
+        email = user.email
+        user.delete()
+        return Response({'detail': f'User {email} deleted successfully.'})
+
+
+class AdminTransactionListView(APIView):
+    """List all orders/transactions for admin view with item details."""
+    permission_classes = [IsAdminUser]
+
+    def get(self, request):
+        from apps.orders.models import Order
+        orders = Order.objects.select_related('user').prefetch_related('items').order_by('-created_at')
+        data = []
+        for o in orders:
+            items_data = []
+            for item in o.items.all():
+                items_data.append({
+                    'id': item.id,
+                    'name': item.product_name,
+                    'qty': item.quantity,
+                    'price': str(item.price),
+                    'color': item.variant_color
+                })
+            
+            data.append({
+                'id':             o.id,
+                'order_number':   o.order_number,
+                'user_id':        o.user.id if o.user else None,
+                'user_email':     o.user.email if o.user else 'Deleted User',
+                'user_name':      o.user.name  if o.user else 'Deleted User',
+                'status':         o.status,
+                'payment_status': o.payment_status,
+                'payment_method': o.payment_method,
+                'payment_id':     o.payment_id,
+                'total':          str(o.total),
+                'item_count':     o.items.count(),
+                'items':          items_data,
+                'created_at':     o.created_at,
+                'paid_at':        o.paid_at,
+                'shipping_address': f"{o.shipping_line1}, {o.shipping_city}, {o.shipping_pincode}" if o.shipping_line1 else None
+            })
+        return Response(data)
+
+
+

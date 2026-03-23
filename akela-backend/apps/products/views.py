@@ -1,7 +1,7 @@
-from rest_framework.viewsets   import ReadOnlyModelViewSet
+from rest_framework.viewsets   import ModelViewSet
 from rest_framework.decorators import action
 from rest_framework.response   import Response
-from rest_framework.permissions import AllowAny
+from rest_framework.permissions import AllowAny, IsAdminUser
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework.filters    import SearchFilter, OrderingFilter
 from .models      import Product
@@ -9,8 +9,12 @@ from .serializers import ProductListSerializer, ProductDetailSerializer
 from .filters     import ProductFilter
 
 
-class ProductViewSet(ReadOnlyModelViewSet):
-    permission_classes = [AllowAny]
+class ProductViewSet(ModelViewSet):
+    def get_permissions(self):
+        if self.action in ['list', 'retrieve', 'featured', 'new_arrivals', 'related']:
+            return [AllowAny()]
+        return [IsAdminUser()]
+
     queryset = Product.objects.filter(
         is_active=True
     ).prefetch_related('images', 'variants', 'tags')
@@ -22,11 +26,9 @@ class ProductViewSet(ReadOnlyModelViewSet):
     ordering         = ['-created_at']
 
     def get_serializer_class(self):
-        return (
-            ProductDetailSerializer
-            if self.action == 'retrieve'
-            else ProductListSerializer
-        )
+        if self.action in ['retrieve', 'create', 'update', 'partial_update']:
+            return ProductDetailSerializer
+        return ProductListSerializer
 
     @action(detail=False, methods=['get'], url_path='featured')
     def featured(self, request):

@@ -40,7 +40,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     
     const data = await response.json();
     if (!response.ok) {
-      throw new Error(data.error || 'Login failed');
+      throw new Error(data.error || data.detail || 'Login failed. Please check your credentials.');
     }
     
     setUser(data.user);

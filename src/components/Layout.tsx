@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { Link } from 'react-router-dom';
-import { ShoppingBag, Search, Menu, X, User, Heart, ArrowRight, Eye, Shield } from 'lucide-react';
+import { ShoppingBag, Search, Menu, X, User, LogOut, Heart, ArrowRight, Eye, Shield } from 'lucide-react';
+import { useNavigate, Link } from 'react-router-dom';
 import { Product, CartItem } from '../types';
 import { cn, formatCurrency } from '../lib/utils';
 import { Canvas } from '@react-three/fiber';
@@ -12,7 +12,23 @@ import { useAuth } from '../contexts/AuthContext';
 // --- Navbar ---
 export const Navbar: React.FC<{ cartCount: number; onCartClick: () => void }> = ({ cartCount, onCartClick }) => {
   const [isScrolled, setIsScrolled] = useState(false);
-  const { user } = useAuth();
+  const { user, logout } = useAuth();
+
+  const navigate = useNavigate();
+
+  const handleLink = (to: string) => (e: React.MouseEvent) => {
+    e.preventDefault();
+    if (!user && to !== '/') {
+      navigate('/login');
+    } else {
+      navigate(to);
+    }
+  };
+
+  const handleLogout = () => {
+    logout();
+    navigate('/');
+  };
 
   useEffect(() => {
     const handleScroll = () => setIsScrolled(window.scrollY > 50);
@@ -28,16 +44,21 @@ export const Navbar: React.FC<{ cartCount: number; onCartClick: () => void }> = 
       <div className="flex items-center gap-12">
         <Link to="/" className="text-2xl font-display tracking-tighter font-bold uppercase">Akeela</Link>
         <div className="hidden md:flex gap-8 text-xs uppercase tracking-widest font-medium text-white/60">
-          <Link to="/" className="hover:text-white transition-colors">Home</Link>
-          <Link to="/collections" className="hover:text-white transition-colors">Collections</Link>
-          <Link to="/bespoke" className="hover:text-white transition-colors">Bespoke</Link>
-          <Link to="/vision-ai" className="hover:text-white transition-colors">Vision AI</Link>
-          <Link to="/atelier" className="hover:text-white transition-colors">Atelier</Link>
+          <a href="/" onClick={handleLink('/')} className="hover:text-white transition-colors">Home</a>
+          <a href="/collections" onClick={handleLink('/collections')} className="hover:text-white transition-colors">Collections</a>
+          <a href="/bespoke" onClick={handleLink('/bespoke')} className="hover:text-white transition-colors">Bespoke</a>
+          <a href="/vision-ai" onClick={handleLink('/vision-ai')} className="hover:text-white transition-colors">Vision AI</a>
+          <a href="/atelier" onClick={handleLink('/atelier')} className="hover:text-white transition-colors">Atelier</a>
         </div>
       </div>
 
       <div className="flex items-center gap-6">
-        <button className="hover:text-white/70 transition-colors"><Search size={20} /></button>
+        <button 
+          onClick={() => !user ? navigate('/login') : null}
+          className="hover:text-white/70 transition-colors"
+        >
+          <Search size={20} />
+        </button>
         
         {user?.role === 'admin' && (
           <Link to="/admin" className="hover:text-white/70 transition-colors">
@@ -48,9 +69,18 @@ export const Navbar: React.FC<{ cartCount: number; onCartClick: () => void }> = 
         <Link to={user ? "/dashboard" : "/login"} className="hover:text-white/70 transition-colors">
           <User size={20} />
         </Link>
+        
+        {user && (
+          <button 
+            onClick={handleLogout}
+            className="hover:text-white/70 transition-colors"
+          >
+            <LogOut size={20} />
+          </button>
+        )}
 
         <button 
-          onClick={onCartClick}
+          onClick={() => !user ? navigate('/login') : onCartClick()}
           className="relative hover:text-white/70 transition-colors"
         >
           <ShoppingBag size={20} />
@@ -65,8 +95,6 @@ export const Navbar: React.FC<{ cartCount: number; onCartClick: () => void }> = 
     </nav>
   );
 };
-
-import { useNavigate } from 'react-router-dom';
 
 // --- Hero ---
 export const Hero: React.FC<{ onTryOn: () => void }> = ({ onTryOn }) => {
@@ -246,6 +274,18 @@ export const ProductCard: React.FC<{ product: Product; onAddToCart: (p: Product)
 
 // --- Footer ---
 export const Footer: React.FC = () => {
+  const { user } = useAuth();
+  const navigate = useNavigate();
+
+  const handleLink = (to: string) => (e: React.MouseEvent) => {
+    e.preventDefault();
+    if (!user && to !== '/') {
+      navigate('/login');
+    } else {
+      navigate(to);
+    }
+  };
+
   return (
     <footer className="bg-white/5 border-t border-white/5 py-24 px-8 sm:px-16 mt-24">
       <div className="grid grid-cols-1 md:grid-cols-4 gap-16">
@@ -258,25 +298,25 @@ export const Footer: React.FC = () => {
           <div className="flex gap-6">
             <a href="#" className="text-white/40 hover:text-white transition-colors">Instagram</a>
             <a href="#" className="text-white/40 hover:text-white transition-colors">Vogue</a>
-            <Link to="/atelier" className="text-white/40 hover:text-white transition-colors">Atelier</Link>
+            <a href="/atelier" onClick={handleLink('/atelier')} className="text-white/40 hover:text-white transition-colors">Atelier</a>
           </div>
         </div>
         <div>
           <h4 className="text-xs uppercase tracking-widest font-bold mb-8">Navigation</h4>
           <ul className="flex flex-col gap-4 text-sm text-white/40">
-            <li><Link to="/collections" className="hover:text-white transition-colors">Collections</Link></li>
-            <li><Link to="/bespoke" className="hover:text-white transition-colors">Bespoke Service</Link></li>
-            <li><Link to="/vision-ai" className="hover:text-white transition-colors">Vision AI</Link></li>
-            <li><a href="#" className="hover:text-white transition-colors">Store Locator</a></li>
+            <li><a href="/collections" onClick={handleLink('/collections')} className="hover:text-white transition-colors">Collections</a></li>
+            <li><a href="/bespoke" onClick={handleLink('/bespoke')} className="hover:text-white transition-colors">Bespoke Service</a></li>
+            <li><a href="/vision-ai" onClick={handleLink('/vision-ai')} className="hover:text-white transition-colors">Vision AI</a></li>
+            <li><a href="/store-locator" onClick={handleLink('/store-locator')} className="hover:text-white transition-colors">Store Locator</a></li>
           </ul>
         </div>
         <div>
           <h4 className="text-xs uppercase tracking-widest font-bold mb-8">Support</h4>
           <ul className="flex flex-col gap-4 text-sm text-white/40">
-            <li><a href="#" className="hover:text-white transition-colors">Care Guide</a></li>
-            <li><a href="#" className="hover:text-white transition-colors">Shipping & Returns</a></li>
-            <li><a href="#" className="hover:text-white transition-colors">Privacy Policy</a></li>
-            <li><a href="#" className="hover:text-white transition-colors">Contact Us</a></li>
+            <li><a href="/care-guide" onClick={handleLink('/care-guide')} className="hover:text-white transition-colors">Care Guide</a></li>
+            <li><a href="/shipping" onClick={handleLink('/shipping')} className="hover:text-white transition-colors">Shipping & Returns</a></li>
+            <li><a href="/privacy" onClick={handleLink('/privacy')} className="hover:text-white transition-colors">Privacy Policy</a></li>
+            <li><a href="/contact" onClick={handleLink('/contact')} className="hover:text-white transition-colors">Contact Us</a></li>
           </ul>
         </div>
       </div>
