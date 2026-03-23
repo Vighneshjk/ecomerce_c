@@ -100,7 +100,14 @@ export const AdminPanel: React.FC = () => {
     setLoading(true);
     try {
       const res = await apiFetch('/api/auth/admin/users/');
-      if (res.ok) setUsers(await res.json());
+      if (res.ok) {
+        setUsers(await res.json());
+      } else {
+        const err = await res.json().catch(() => ({}));
+        showToast(`❌ Users Fetch Error: ${err.error || res.statusText}`);
+      }
+    } catch (err) {
+      showToast('❌ Network error while fetching users');
     } finally {
       setLoading(false);
     }
@@ -110,7 +117,14 @@ export const AdminPanel: React.FC = () => {
     setLoading(true);
     try {
       const res = await apiFetch('/api/auth/admin/transactions/');
-      if (res.ok) setTransactions(await res.json());
+      if (res.ok) {
+        setTransactions(await res.json());
+      } else {
+        const err = await res.json().catch(() => ({}));
+        showToast(`❌ Transactions Fetch Error: ${err.error || res.statusText}`);
+      }
+    } catch (err) {
+      showToast('❌ Network error while fetching transactions');
     } finally {
       setLoading(false);
     }
@@ -121,7 +135,13 @@ export const AdminPanel: React.FC = () => {
     try {
       const res = await apiFetch('/api/products/');
       const data = await res.json();
-      if (res.ok) setProducts(data.results || data);
+      if (res.ok) {
+        setProducts(data.results || data);
+      } else {
+        showToast(`❌ Products Fetch Error: ${res.statusText}`);
+      }
+    } catch (err) {
+      showToast('❌ Network error while fetching products');
     } finally {
       setLoading(false);
     }

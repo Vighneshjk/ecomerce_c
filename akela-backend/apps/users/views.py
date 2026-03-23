@@ -273,7 +273,8 @@ class AdminUserListView(APIView):
                 'phone':       u.phone,
                 'role':        u.role,
                 'is_active':   u.is_active,
-                'date_joined': u.date_joined,
+                'is_staff':    u.is_staff,
+                'date_joined': u.date_joined.isoformat() if u.date_joined else None,
             })
         return Response(data)
 
@@ -295,11 +296,11 @@ class AdminUserDetailView(APIView):
             'phone':       user.phone,
             'role':        user.role,
             'is_active':   user.is_active,
-            'date_joined': user.date_joined,
+            'date_joined': user.date_joined.isoformat() if user.date_joined else None,
             'analytics': {
                 'total_orders': orders.count(),
                 'total_spent':  str(total_spent),
-                'last_order':   orders.first().created_at if orders.exists() else None
+                'last_order':   orders.first().created_at.isoformat() if orders.exists() else None
             }
         })
 
@@ -363,8 +364,8 @@ class AdminTransactionListView(APIView):
                 'total':          str(o.total),
                 'item_count':     o.items.count(),
                 'items':          items_data,
-                'created_at':     o.created_at,
-                'paid_at':        o.paid_at,
+                'created_at':     o.created_at.isoformat() if o.created_at else None,
+                'paid_at':        o.paid_at.isoformat() if o.paid_at else None,
                 'shipping_address': f"{o.shipping_line1}, {o.shipping_city}, {o.shipping_pincode}" if o.shipping_line1 else None
             })
         return Response(data)
